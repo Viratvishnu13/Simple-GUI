@@ -423,6 +423,9 @@ function initializeEventListeners() {
   // Package Wrapper controls
   packageWrapperCloseButton.addEventListener('click', closePackageWrapperWindow);
   
+  // Package Edit button
+  packageEditButton.addEventListener('click', handlePackageEdit);
+  
   // Package Wrapper tabs
   document.querySelectorAll('.package-tab[data-package-tab]').forEach(button => {
     button.addEventListener('click', () => {
