@@ -1090,6 +1090,7 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
+  position: relative;
 }
 
 .package-field {
@@ -1110,21 +1111,105 @@ body {
 }
 
 .package-edit-button {
-  position: absolute;
-  bottom: 0.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: var(--muted);
+  margin-top: 1rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
   border: 1px solid var(--border);
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.75rem;
+  border-radius: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .package-edit-button:hover {
+  background-color: var(--primary);
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.package-edit-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Package Identity Edit Modal */
+.package-identity-dialog {
+  max-width: 600px;
+  width: 95%;
+}
+
+.package-identity-content {
+  max-height: 70vh;
+}
+
+.package-appearance-edit-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+.package-banner-edit {
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--card);
+  min-height: 60px;
+}
+
+.package-icon-edit,
+.package-logo-edit {
+  border: 1px solid var(--border);
+  border-radius: 0.375rem;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--card);
+  min-height: 80px;
+  position: relative;
+}
+
+.edit-label {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.edit-icon-button,
+.edit-logo-button {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  color: var(--muted-foreground);
+  transition: all 0.2s;
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+}
+
+.edit-icon-button:hover,
+.edit-logo-button:hover {
   background-color: var(--accent);
+  color: var(--foreground);
+}
+
+.package-identity-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
 /* Utility Classes */
@@ -1186,6 +1271,19 @@ body {
   .package-identity-grid {
     grid-template-columns: 1fr;
   }
+  
+  .package-appearance-edit-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .package-identity-edit-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .package-identity-dialog {
+    width: 98%;
+    max-width: none;
+  }
 }
 
 @media (max-width: 480px) {
@@ -1210,6 +1308,10 @@ body {
   }
   
   .package-wrapper-content {
+    padding: 1rem;
+  }
+  
+  .package-identity-content {
     padding: 1rem;
   }
 }
