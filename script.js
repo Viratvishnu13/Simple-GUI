@@ -36,12 +36,6 @@ const cancelButton = document.getElementById('cancelButton');
 const packageLocationInput = document.getElementById('packageLocation');
 const browseButton = document.querySelector('.browse-button');
 
-// Package Identity Modal Elements
-const packageIdentityModal = document.getElementById('packageIdentityModal');
-const packageIdentityCloseButton = document.getElementById('packageIdentityCloseButton');
-const savePackageIdentityButton = document.getElementById('savePackageIdentityButton');
-const cancelPackageIdentityButton = document.getElementById('cancelPackageIdentityButton');
-
 // Package Wrapper Elements
 const packageWrapperWindow = document.getElementById('packageWrapperWindow');
 const packageWrapperCloseButton = document.getElementById('packageWrapperCloseButton');
@@ -164,118 +158,6 @@ function closePackageWrapperWindow() {
   document.body.style.overflow = '';
   
   console.log('Package Wrapper window closed');
-}
-
-// Package Identity Modal Functions
-function openPackageIdentityModal() {
-  packageIdentityModal.classList.remove('hidden');
-  
-  // Load current values into the form
-  loadPackageIdentityValues();
-  
-  // Prevent body scroll when modal is open
-  document.body.style.overflow = 'hidden';
-  
-  console.log('Package Identity modal opened');
-}
-
-function closePackageIdentityModal() {
-  packageIdentityModal.classList.add('hidden');
-  
-  // Re-enable body scroll
-  document.body.style.overflow = '';
-  
-  console.log('Package Identity modal closed');
-}
-
-function loadPackageIdentityValues() {
-  // Get current values from the package wrapper display
-  const fields = document.querySelectorAll('.package-field-value');
-  const values = {};
-  
-  // Map the current values (this would normally come from your data model)
-  values.name = 'None';
-  values.revision = '01';
-  values.vendor = 'None';
-  values.scriptVersion = '1.0.0';
-  values.version = 'None';
-  values.scriptDate = '22.07.2025';
-  values.architecture = 'None';
-  values.scriptAuthor = 'CKED01';
-  values.language = 'EN';
-  
-  // Set form values
-  document.getElementById('editName').value = values.name === 'None' ? '' : values.name;
-  document.getElementById('editRevision').value = values.revision;
-  document.getElementById('editVendor').value = values.vendor === 'None' ? '' : values.vendor;
-  document.getElementById('editScriptVersion').value = values.scriptVersion;
-  document.getElementById('editVersion').value = values.version === 'None' ? '' : values.version;
-  document.getElementById('editScriptDate').value = values.scriptDate;
-  document.getElementById('editArchitecture').value = values.architecture === 'None' ? '' : values.architecture;
-  document.getElementById('editScriptAuthor').value = values.scriptAuthor;
-  document.getElementById('editLanguage').value = values.language;
-}
-
-function savePackageIdentityValues() {
-  // Get form values
-  const values = {
-    name: document.getElementById('editName').value || 'None',
-    revision: document.getElementById('editRevision').value || '01',
-    vendor: document.getElementById('editVendor').value || 'None',
-    scriptVersion: document.getElementById('editScriptVersion').value || '1.0.0',
-    version: document.getElementById('editVersion').value || 'None',
-    scriptDate: document.getElementById('editScriptDate').value || new Date().toLocaleDateString('de-DE'),
-    architecture: document.getElementById('editArchitecture').value || 'None',
-    scriptAuthor: document.getElementById('editScriptAuthor').value || 'CKED01',
-    language: document.getElementById('editLanguage').value || 'EN'
-  };
-  
-  // Update the display values in the package wrapper
-  updatePackageIdentityDisplay(values);
-  
-  // Close the modal
-  closePackageIdentityModal();
-  
-  console.log('Package Identity values saved:', values);
-}
-
-function updatePackageIdentityDisplay(values) {
-  const fieldElements = document.querySelectorAll('.package-field');
-  
-  fieldElements.forEach(field => {
-    const label = field.querySelector('.package-field-label').textContent.toLowerCase();
-    const valueElement = field.querySelector('.package-field-value');
-    
-    switch(label) {
-      case 'name':
-        valueElement.textContent = values.name;
-        break;
-      case 'revision':
-        valueElement.textContent = values.revision;
-        break;
-      case 'vendor':
-        valueElement.textContent = values.vendor;
-        break;
-      case 'script version':
-        valueElement.textContent = values.scriptVersion;
-        break;
-      case 'version':
-        valueElement.textContent = values.version;
-        break;
-      case 'script date':
-        valueElement.textContent = values.scriptDate;
-        break;
-      case 'architecture':
-        valueElement.textContent = values.architecture;
-        break;
-      case 'script author':
-        valueElement.textContent = values.scriptAuthor;
-        break;
-      case 'language':
-        valueElement.textContent = values.language;
-        break;
-    }
-  });
 }
 
 function switchPackageTab(tabName) {
@@ -541,14 +423,6 @@ function initializeEventListeners() {
   // Package Wrapper controls
   packageWrapperCloseButton.addEventListener('click', closePackageWrapperWindow);
   
-  // Package Identity Modal controls
-  packageIdentityCloseButton.addEventListener('click', closePackageIdentityModal);
-  savePackageIdentityButton.addEventListener('click', savePackageIdentityValues);
-  cancelPackageIdentityButton.addEventListener('click', closePackageIdentityModal);
-  
-  // Package Edit Button
-  document.querySelector('.package-edit-button').addEventListener('click', openPackageIdentityModal);
-  
   // Package Wrapper tabs
   document.querySelectorAll('.package-tab[data-package-tab]').forEach(button => {
     button.addEventListener('click', () => {
@@ -561,13 +435,6 @@ function initializeEventListeners() {
   psadtModal.addEventListener('click', (e) => {
     if (e.target === psadtModal) {
       closePSADTModal();
-    }
-  });
-  
-  // Close package identity modal on overlay click
-  packageIdentityModal.addEventListener('click', (e) => {
-    if (e.target === packageIdentityModal) {
-      closePackageIdentityModal();
     }
   });
   
@@ -616,10 +483,6 @@ function initializeEventListeners() {
     if (e.key === 'Escape') {
       if (appState.packageWrapperOpen) {
         closePackageWrapperWindow();
-        return;
-      }
-      if (!packageIdentityModal.classList.contains('hidden')) {
-        closePackageIdentityModal();
         return;
       }
       if (appState.modalOpen) {
