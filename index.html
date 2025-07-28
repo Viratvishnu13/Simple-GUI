@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Launcher</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/powershell/powershell.min.js"></script>
+    
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="psadt.css">
 </head>
 <body>
+    <input type="file" id="imageUploadInput" class="hidden" accept="image/*">
     <div class="app-container">
-        <!-- Header -->
         <header class="header">
-            <!-- Title Bar -->
             <div class="title-bar">
                 <div class="title-bar-left">
                     <button class="menu-button" id="menuButton">
@@ -54,7 +59,6 @@
                 </div>
             </div>
 
-            <!-- Breadcrumb -->
             <div class="breadcrumb">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
@@ -80,7 +84,6 @@
         </header>
 
         <div class="main-content">
-            <!-- Navigation Sidebar -->
             <nav class="navigation-sidebar" id="navigationSidebar">
                 <div class="nav-items">
                     <div class="nav-item active" data-view="packager-tasks">
@@ -150,10 +153,8 @@
                 </div>
             </nav>
 
-            <!-- Content Area -->
             <div class="content-area">
                 <div class="columns-container">
-                    <!-- Tasks Column -->
                     <div class="tasks-column">
                         <div id="packagerTasksView" class="task-view">
                             <div class="task-item" data-task="create-package">
@@ -233,7 +234,6 @@
                         </div>
                     </div>
 
-                    <!-- Options Column -->
                     <div class="options-column">
                         <div id="createPackageOptions" class="options-view hidden">
                             <div class="option-item" data-option="ps1">
@@ -331,7 +331,6 @@
                     </div>
                 </div>
 
-                <!-- Recent Footer -->
                 <div class="recent-footer">
                     <div class="recent-header">
                         <h2>Recent</h2>
@@ -439,10 +438,8 @@
         </div>
     </div>
 
-    <!-- PSAppDeployToolkit Modal Overlay -->
     <div id="psadtModal" class="modal-overlay hidden">
         <div class="modal-dialog">
-            <!-- Modal Header -->
             <div class="modal-header">
                 <div class="modal-header-left">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -472,9 +469,7 @@
                 </div>
             </div>
 
-            <!-- Modal Content -->
             <div class="modal-content">
-                <!-- Custom Template Option -->
                 <div class="template-option">
                     <div class="radio-group">
                         <input type="radio" id="customTemplate" name="template" value="custom" checked>
@@ -482,7 +477,6 @@
                     </div>
                 </div>
 
-                <!-- Template Dropdown -->
                 <div class="form-group">
                     <label for="templateSelect" class="form-label">Template</label>
                     <div class="select-wrapper">
@@ -497,7 +491,6 @@
                     </div>
                 </div>
 
-                <!-- Package Location -->
                 <div class="form-group">
                     <label for="packageLocation" class="form-label">Package location</label>
                     <div class="input-group">
@@ -507,7 +500,6 @@
                 </div>
             </div>
 
-            <!-- Modal Footer -->
             <div class="modal-footer">
                 <button type="button" class="modal-button primary" id="createPackageButton">Create</button>
                 <button type="button" class="modal-button secondary" id="cancelButton">Cancel</button>
@@ -515,10 +507,8 @@
         </div>
     </div>
 
-    <!-- PSAppDeployToolkit Package Wrapper Window -->
     <div id="packageWrapperWindow" class="package-wrapper-window hidden">
-        <!-- Package Wrapper Header -->
-        <div class="package-wrapper-header">
+        <div class="package-wrapper-header" id="packageWrapperHeader">
             <div class="package-wrapper-title-left">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M16.5 9.4 7.55 4.24"/>
@@ -529,6 +519,9 @@
                 <span class="package-wrapper-title">Package Wrapper - PKG-20250722-212050</span>
             </div>
             <div class="package-wrapper-version">PSADT version: 3.10.2</div>
+            <div class="header-search">
+                <input type="search" placeholder="Search...">
+            </div>
             <div class="modal-controls">
                 <button class="modal-control minimize" title="Minimize">
                     <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -548,115 +541,240 @@
             </div>
         </div>
 
-        <!-- Package Wrapper Tabs -->
         <div class="package-wrapper-tabs">
             <button class="package-tab active" data-package-tab="general">General</button>
             <button class="package-tab" data-package-tab="designer">Package Designer</button>
             <button class="package-tab" data-package-tab="configuration">Configuration</button>
         </div>
 
-        <!-- Package Wrapper Content -->
         <div class="package-wrapper-content">
-            <!-- General Tab Content -->
             <div id="generalTab" class="package-tab-content">
-                <!-- Package Appearance Section -->
-                <div class="package-section">
+                <div class="package-section" id="packageAppearanceSection">
                     <h3 class="package-section-title">Package Appearance</h3>
                     <div class="package-appearance-grid">
-                        <!-- Banner -->
                         <div class="package-banner">
-                            <div class="package-banner-logo">
-                                <svg width="24" height="24" viewBox="0 0 100 100" fill="none">
-                                    <path d="M20 20L50 10L80 20L50 30Z" fill="#4285f4"/>
-                                    <path d="M20 40L50 30L80 40L50 50Z" fill="#0066cc"/>
-                                    <path d="M20 60L50 50L80 60L50 70Z" fill="#333"/>
-                                </svg>
-                                <span class="logo-ps">PS</span><span class="logo-app">App</span><span class="logo-deploy">Deploy</span><span class="logo-toolkit">Toolkit</span>
+                            <div class="package-image-container">
+                                <div class="package-banner-logo">
+                                    <svg width="24" height="24" viewBox="0 0 100 100" fill="none">
+                                        <path d="M20 20L50 10L80 20L50 30Z" fill="#4285f4"/>
+                                        <path d="M20 40L50 30L80 40L50 50Z" fill="#0066cc"/>
+                                        <path d="M20 60L50 50L80 60L50 70Z" fill="#333"/>
+                                    </svg>
+                                    <span class="logo-ps">PS</span><span class="logo-app">App</span><span class="logo-deploy">Deploy</span><span class="logo-toolkit">Toolkit</span>
+                                </div>
+                                <div class="package-edit-overlay" id="editBannerButton">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                        <path d="m15 5 4 4"/>
+                                    </svg>
+                                </div>
                             </div>
+                            <span style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">Banner</span>
                         </div>
                         
-                        <!-- Icon -->
                         <div class="package-icon-box">
-                            <div class="package-icon-placeholder">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                                    <polyline points="17,8 12,3 7,8"/>
-                                    <line x1="12" x2="12" y1="3" y2="15"/>
-                                </svg>
+                            <div class="package-image-container">
+                                <div class="package-icon-placeholder">
+                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                        <polyline points="17,8 12,3 7,8"/>
+                                        <line x1="12" x2="12" y1="3" y2="15"/>
+                                    </svg>
+                                </div>
+                                <div class="package-edit-overlay" id="editIconButton">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                        <path d="m15 5 4 4"/>
+                                    </svg>
+                                </div>
                             </div>
                             <span style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">Icon</span>
                         </div>
                         
-                        <!-- Logo -->
                         <div class="package-logo-box">
-                            <div class="package-logo-placeholder">
-                                <svg class="package-logo-svg" width="48" height="48" viewBox="0 0 100 100" fill="none">
-                                    <path d="M20 20L50 10L80 20L50 30Z" fill="#4285f4"/>
-                                    <path d="M20 40L50 30L80 40L50 50Z" fill="#0066cc"/>
-                                    <path d="M20 60L50 50L80 60L50 70Z" fill="#333"/>
-                                </svg>
+                            <div class="package-image-container">
+                                <div class="package-logo-placeholder">
+                                    <svg class="package-logo-svg" width="48" height="48" viewBox="0 0 100 100" fill="none">
+                                        <path d="M20 20L50 10L80 20L50 30Z" fill="#4285f4"/>
+                                        <path d="M20 40L50 30L80 40L50 50Z" fill="#0066cc"/>
+                                        <path d="M20 60L50 50L80 60L50 70Z" fill="#333"/>
+                                    </svg>
+                                </div>
+                                <div class="package-edit-overlay" id="editLogoButton">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                                        <path d="m15 5 4 4"/>
+                                    </svg>
+                                </div>
                             </div>
                             <span style="font-size: 0.75rem; color: var(--muted-foreground); margin-top: 0.5rem;">Logo</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Package Identity Section -->
                 <div class="package-section">
                     <h3 class="package-section-title">Package Identity</h3>
-                    <div class="package-identity-grid">
-                        <div class="package-field">
-                            <div class="package-field-label">Name</div>
-                            <div class="package-field-value">None</div>
+                    <div class="package-identity-grid" id="packageIdentityGrid">
+                        <div class="package-field" data-field="name">
+                            <label for="pkg-name" class="package-field-label">Name</label>
+                            <input type="text" id="pkg-name" class="package-field-input" value="None" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Revision</div>
-                            <div class="package-field-value">01</div>
+                        <div class="package-field" data-field="revision">
+                            <label for="pkg-revision" class="package-field-label">Revision</label>
+                            <input type="text" id="pkg-revision" class="package-field-input" value="01" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Vendor</div>
-                            <div class="package-field-value">None</div>
+                        <div class="package-field" data-field="vendor">
+                            <label for="pkg-vendor" class="package-field-label">Vendor</label>
+                            <input type="text" id="pkg-vendor" class="package-field-input" value="None" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Script version</div>
-                            <div class="package-field-value">1.0.0</div>
+                        <div class="package-field" data-field="script-version">
+                            <label for="pkg-script-version" class="package-field-label">Script version</label>
+                            <input type="text" id="pkg-script-version" class="package-field-input" value="1.0.0" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Version</div>
-                            <div class="package-field-value">None</div>
+                        <div class="package-field" data-field="version">
+                            <label for="pkg-version" class="package-field-label">Version</label>
+                            <input type="text" id="pkg-version" class="package-field-input" value="None" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Script date</div>
-                            <div class="package-field-value">22.07.2025</div>
+                        <div class="package-field" data-field="script-date">
+                            <label for="pkg-script-date" class="package-field-label">Script date</label>
+                            <input type="text" id="pkg-script-date" class="package-field-input" value="22.07.2025" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Architecture</div>
-                            <div class="package-field-value">None</div>
+                        <div class="package-field" data-field="architecture">
+                            <label for="pkg-architecture" class="package-field-label">Architecture</label>
+                            <input type="text" id="pkg-architecture" class="package-field-input" value="None" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Script author</div>
-                            <div class="package-field-value">CKED01</div>
+                        <div class="package-field" data-field="script-author">
+                            <label for="pkg-script-author" class="package-field-label">Script author</label>
+                            <input type="text" id="pkg-script-author" class="package-field-input" value="CKED01" readonly>
                         </div>
-                        <div class="package-field">
-                            <div class="package-field-label">Language</div>
-                            <div class="package-field-value">EN</div>
+                        <div class="package-field" data-field="language">
+                            <label for="pkg-language" class="package-field-label">Language</label>
+                            <input type="text" id="pkg-language" class="package-field-input" value="EN" readonly>
                         </div>
                     </div>
-                    <button class="package-edit-button" id="packageEditButton">Edit</button>
+                    <div class="package-identity-actions">
+                        <button class="package-edit-button" id="packageEditButton">Edit</button>
+                        <button type="button" class="modal-button primary hidden" id="packageSaveButton">Save</button>
+                        <button type="button" class="modal-button secondary hidden" id="packageCancelButton">Cancel</button>
+                    </div>
                 </div>
             </div>
 
-            <!-- Package Designer Tab Content -->
             <div id="designerTab" class="package-tab-content hidden">
-                <div class="package-section">
-                    <h3 class="package-section-title">Package Designer</h3>
-                    <p style="color: var(--muted-foreground);">Package Designer features will be available here.</p>
+                <div class="package-designer-layout">
+                    <div class="designer-sidebar">
+                        <ul class="designer-tree">
+                            <li>
+                                <div class="tree-item" data-id="files" data-view="explorer">
+                                    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h6l2 2h8q.825 0 1.413.588T22 8v10q0 .825-.587 1.413T20 20z"/></svg>
+                                    <span>Files</span>
+                                </div>
+                                <ul class="tree-submenu">
+                                    <li><div class="tree-item" data-id="installation" data-view="explorer"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12.1 18.55q-1.9 0-3.325-1.1T6.8 14.9l.65-.65q.35.85 1 1.475t1.6.625q1.15 0 1.8-.675t.65-1.875q0-1.05-.625-1.725T10.3 11.5q-1.35 0-2.25.775T7.1 14.2L6.4 13.5q.3-.95 1.075-1.65T9.4 11.1q.35-.2.7-.3t.7-.1q1.45 0 2.5.8t1.05 2.15q0 1-.45 1.825t-1.25 1.325q-.7.4-1.55.6t-1.65.2m-1.3-8.05l-1.45-1.45L11.5 6.9l2.15 2.15l-1.45 1.45L10.05 8.35zM6 22q-.825 0-1.412-.587T4 20V4q0-.825.588-1.412T6 2h8l6 6v12q0 .825-.587 1.413T18 22z"/></svg><span>Installation</span></div></li>
+                                    <li><div class="tree-item active" data-id="support" data-view="explorer"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12.1 18.55q-1.9 0-3.325-1.1T6.8 14.9l.65-.65q.35.85 1 1.475t1.6.625q1.15 0 1.8-.675t.65-1.875q0-1.05-.625-1.725T10.3 11.5q-1.35 0-2.25.775T7.1 14.2L6.4 13.5q.3-.95 1.075-1.65T9.4 11.1q.35-.2.7-.3t.7-.1q1.45 0 2.5.8t1.05 2.15q0 1-.45 1.825t-1.25 1.325q-.7.4-1.55.6t-1.65.2m-1.3-8.05l-1.45-1.45L11.5 6.9l2.15 2.15l-1.45 1.45L10.05 8.35zM6 22q-.825 0-1.412-.587T4 20V4q0-.825.588-1.412T6 2h8l6 6v12q0 .825-.587 1.413T18 22z"/></svg><span>Support files</span></div></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="tree-item" data-id="actions" data-view="editor">
+                                    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h6l2 2h8q.825 0 1.413.588T22 8v10q0 .825-.587 1.413T20 20z"/></svg>
+                                    <span>Actions</span>
+                                </div>
+                                <ul class="tree-submenu">
+                                    <li><div class="tree-item" data-id="pre-install" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Pre-Install</span></div></li>
+                                    <li><div class="tree-item" data-id="install" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Install</span></div></li>
+                                    <li><div class="tree-item" data-id="post-install" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Post-Install</span></div></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <div class="tree-item" data-id="repair" data-view="editor">
+                                    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h6l2 2h8q.825 0 1.413.588T22 8v10q0 .825-.587 1.413T20 20z"/></svg>
+                                    <span>Repair</span>
+                                </div>
+                                <ul class="tree-submenu">
+                                    <li><div class="tree-item" data-id="pre-repair" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Pre-Repair</span></div></li>
+                                    <li><div class="tree-item" data-id="repair-action" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Repair</span></div></li>
+                                    <li><div class="tree-item" data-id="post-repair" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Post-Repair</span></div></li>
+                                </ul>
+                            </li>
+                             <li>
+                                <div class="tree-item" data-id="uninstall" data-view="editor">
+                                    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M4 20q-.825 0-1.412-.587T2 18V6q0-.825.588-1.412T4 4h6l2 2h8q.825 0 1.413.588T22 8v10q0 .825-.587 1.413T20 20z"/></svg>
+                                    <span>Uninstall</span>
+                                </div>
+                                <ul class="tree-submenu">
+                                    <li><div class="tree-item" data-id="pre-uninstall" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Pre-Uninstall</span></div></li>
+                                    <li><div class="tree-item" data-id="uninstall-action" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Uninstall</span></div></li>
+                                    <li><div class="tree-item" data-id="post-uninstall" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="m12 20l-1.425-1.4l5.6-5.6H4v-2h12.175l-5.6-5.6L12 4l8 8z"/></svg><span>Post-Uninstall</span></div></li>
+                                </ul>
+                            </li>
+                            <li><div class="tree-item" data-id="raw-script" data-view="editor"><svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6l6 6zM14.6 16.6l4.6-4.6l-4.6-4.6L16 6l6 6l-6 6z"/></svg><span>Raw deployment script</span></div></li>
+                        </ul>
+                    </div>
+                    <div id="designerContent" class="designer-content">
+                        <div id="fileExplorerView">
+                             <div class="designer-content-header">
+                                <h4 id="designerContentTitle">Primary Installation Files</h4>
+                                <div class="header-right">
+                                    <span id="fileCount">0 files (0 Bytes)</span>
+                                    <button id="collapseAllBtn" class="designer-header-btn">Collapse all</button>
+                                </div>
+                            </div>
+                            <div class="file-explorer">
+                                <table class="designer-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Size</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="fileListBody"></tbody>
+                                </table>
+                            </div>
+                            <div id="importSection" class="import-section hidden">
+                                <label for="importPath">Import files</label>
+                                <input type="text" id="importPath" value="Folder">
+                            </div>
+                            <div class="designer-footer">
+                                <div class="footer-buttons">
+                                    <div class="split-button">
+                                        <button id="addFileBtn" class="designer-footer-btn">Add</button>
+                                        <button id="addFileOptionsBtn" class="designer-footer-btn split-button-arrow">^</button>
+                                    </div>
+                                    <button id="deleteFileBtn" class="designer-footer-btn">Delete</button>
+                                </div>
+                                <div class="footer-warning">
+                                    <svg width="16" height="16" viewBox="0 0 24 24"><path fill="currentColor" d="M12 22q-2.075 0-3.9-.788t-3.175-2.137q-1.35-1.35-2.137-3.175T2 12q0-2.075.788-3.9t2.137-3.175q1.35-1.35 3.175-2.138T12 2q2.075 0 3.9.788t3.175 2.138q1.35 1.35 2.137 3.175T22 12q0 2.075-.788 3.9t-2.137 3.175q-1.35 1.35-3.175 2.137T12 22m-1-5h2v-2h-2zm0-4h2V7h-2z"/></svg>
+                                    <span>Changes directly affect the file system of the package and cannot be undone.</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="codeEditorView" class="hidden">
+                             <div class="designer-content-header">
+                                <h4 id="codeEditorTitle">Pre-Installation Actions</h4>
+                                <div class="header-right">
+                                     <button id="viewBtn" class="designer-header-btn">View</button>
+                                </div>
+                            </div>
+                            <textarea id="codeEditor"></textarea>
+                            <div class="designer-footer">
+                                <div class="footer-buttons">
+                                    <button id="addCodeBtn" class="designer-footer-btn">Add</button>
+                                    <button id="recentBtn" class="designer-footer-btn">Recent</button>
+                                    <button id="helpBtn" class="designer-footer-btn">Help</button>
+                                </div>
+                                <div class="footer-status">
+                                    <span id="errorCount">0 errors</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Configuration Tab Content -->
             <div id="configurationTab" class="package-tab-content hidden">
-                <div class="package-section">
+                 <div class="package-section">
                     <h3 class="package-section-title">Configuration</h3>
                     <p style="color: var(--muted-foreground);">Configuration options will be available here.</p>
                 </div>
@@ -665,5 +783,6 @@
     </div>
 
     <script src="script.js"></script>
+    <script src="psadt.js"></script> 
 </body>
 </html>

@@ -1,3 +1,15 @@
+/* Ensure code editor always fills available space in all tabs */
+.package-tab-content,
+.designer-tab-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  height: 100%;
+  width: 100%;
+}
+
 /* CSS Variables for Theme Support */
 :root {
   --font-size: 14px;
@@ -206,20 +218,38 @@ body {
   cursor: pointer;
   color: var(--foreground);
   transition: background-color 0.2s ease;
-  position: relative;
+}
+#codeEditorView {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    height: 100%;
+    width: 100%;
+    background: #282a36;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 0;
+    margin: 0;
+    min-height: 0;
+    min-width: 0;
 }
 
-.window-control:hover {
-  background-color: rgba(0, 0, 0, 0.1);
+#codeEditorView .CodeMirror {
+    flex: 1 1 auto;
+    height: 100% !important;
+    min-height: 0;
+    font-size: 15px;
+    border-radius: 0 0 8px 8px;
+    background: #282a36;
 }
 
-.dark .window-control:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.window-control.close:hover {
-  background-color: #e81123;
-  color: white;
+#codeEditorTitle {
+    padding: 16px 24px 8px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    background: #23242a;
+    border-radius: 8px 8px 0 0;
 }
 
 .window-control.minimize svg,
@@ -351,16 +381,20 @@ body {
 
 /* Content Area */
 .content-area {
-  flex: 1;
+  flex: 1 1 auto;
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  min-height: 0;
+  min-width: 0;
 }
 
 .columns-container {
   display: flex;
-  flex: 1;
+  flex: 1 1 auto;
   overflow: hidden;
+  min-height: 0;
+  min-width: 0;
 }
 
 /* Tasks Column */
@@ -908,226 +942,6 @@ body {
   background-color: var(--accent);
 }
 
-/* PSAppDeployToolkit Package Wrapper Window */
-.package-wrapper-window {
-  position: fixed;
-  top: 5%;
-  left: 5%;
-  width: 90%;
-  height: 90%;
-  background-color: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-direction: column;
-  z-index: 1001;
-  max-width: 900px;
-  max-height: 700px;
-  margin: auto;
-  overflow: hidden;
-}
-
-.package-wrapper-window.hidden {
-  display: none;
-}
-
-/* Package Wrapper Header */
-.package-wrapper-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--border);
-  background-color: var(--card);
-}
-
-.package-wrapper-title-left {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.package-wrapper-title {
-  font-size: 0.875rem;
-  font-weight: var(--font-weight-medium);
-  color: var(--foreground);
-}
-
-.package-wrapper-version {
-  font-size: 0.75rem;
-  color: var(--muted-foreground);
-  margin-left: auto;
-  margin-right: 1rem;
-}
-
-/* Package Wrapper Tabs */
-.package-wrapper-tabs {
-  display: flex;
-  background-color: var(--muted);
-  border-bottom: 1px solid var(--border);
-}
-
-.package-tab {
-  padding: 0.75rem 1.5rem;
-  background: none;
-  border: none;
-  font-size: 0.875rem;
-  cursor: pointer;
-  color: var(--muted-foreground);
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s;
-}
-
-.package-tab.active {
-  background-color: var(--card);
-  color: var(--foreground);
-  border-bottom-color: var(--primary);
-}
-
-.package-tab:hover:not(.active) {
-  background-color: var(--accent);
-}
-
-/* Package Wrapper Content */
-.package-wrapper-content {
-  flex: 1;
-  padding: 1.5rem;
-  overflow-y: auto;
-  background-color: var(--background);
-}
-
-/* Package Appearance Section */
-.package-section {
-  margin-bottom: 2rem;
-}
-
-.package-section-title {
-  font-size: 1rem;
-  font-weight: var(--font-weight-medium);
-  color: var(--foreground);
-  margin-bottom: 1rem;
-}
-
-.package-appearance-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-.package-banner {
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--card);
-  min-height: 80px;
-}
-
-.package-banner-logo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 1.25rem;
-  font-weight: var(--font-weight-medium);
-}
-
-.package-banner-logo .logo-ps {
-  color: #4285f4;
-}
-
-.package-banner-logo .logo-app {
-  color: #0066cc;
-}
-
-.package-banner-logo .logo-deploy {
-  color: #333;
-}
-
-.dark .package-banner-logo .logo-deploy {
-  color: #fff;
-}
-
-.package-banner-logo .logo-toolkit {
-  color: #333;
-}
-
-.dark .package-banner-logo .logo-toolkit {
-  color: #fff;
-}
-
-.package-icon-box,
-.package-logo-box {
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  padding: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--card);
-  min-height: 80px;
-  position: relative;
-}
-
-.package-icon-placeholder,
-.package-logo-placeholder {
-  width: 48px;
-  height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.package-logo-svg {
-  transform: rotate(-15deg);
-}
-
-/* Package Identity Section */
-.package-identity-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-}
-
-.package-field {
-  margin-bottom: 1rem;
-}
-
-.package-field-label {
-  font-size: 0.875rem;
-  font-weight: var(--font-weight-medium);
-  color: var(--foreground);
-  margin-bottom: 0.25rem;
-}
-
-.package-field-value {
-  font-size: 0.875rem;
-  color: var(--muted-foreground);
-  font-style: italic;
-}
-
-.package-edit-button {
-  margin-top: 1rem;
-  background-color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 0.375rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.package-edit-button:hover {
-  background-color: var(--accent);
-}
-
-.package-edit-button:active {
-  transform: translateY(1px);
-}
-
 /* Utility Classes */
 .hidden {
   display: none !important;
@@ -1177,6 +991,7 @@ body {
     left: 2%;
     width: 96%;
     height: 96%;
+    transform: none;
   }
   
   .package-appearance-grid {
