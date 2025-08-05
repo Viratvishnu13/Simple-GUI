@@ -122,6 +122,7 @@ body {
 
 /* Header Styles */
 .header {
+  -webkit-app-region: drag;
   flex-shrink: 0;
   background-color: var(--card);
   border-bottom: 1px solid var(--border);

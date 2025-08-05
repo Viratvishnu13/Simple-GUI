@@ -1,207 +1,282 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // --- DOM Elements ---
-    const imageUploadInput = document.getElementById('imageUploadInput');
-    const psadtModal = document.getElementById('psadtModal');
-    const modalCloseButton = document.getElementById('modalCloseButton');
-    const createPackageButton = document.getElementById('createPackageButton');
-    const cancelButton = document.getElementById('cancelButton');
-    const packageLocationInput = document.getElementById('packageLocation');
-    const browseButton = document.querySelector('.browse-button');
+const imageUploadInput = document.getElementById('imageUploadInput');
+const psadtModal = document.getElementById('psadtModal');
+const modalCloseButton = document.getElementById('modalCloseButton');
+const createPackageButton = document.getElementById('createPackageButton');
+const cancelButton = document.getElementById('cancelButton');
+const packageLocationInput = document.getElementById('packageLocation');
+const browseButton = document.querySelector('.browse-button');
 
-    const packageWrapperWindow = document.getElementById('packageWrapperWindow');
-    const packageWrapperHeader = document.getElementById('packageWrapperHeader');
-    const packageWrapperCloseButton = document.getElementById('packageWrapperCloseButton');
-    const packageAppearanceSection = document.getElementById('packageAppearanceSection');
-    const editBannerButton = document.getElementById('editBannerButton');
-    const editIconButton = document.getElementById('editIconButton');
-    const editLogoButton = document.getElementById('editLogoButton');
-    const packageEditButton = document.getElementById('packageEditButton');
-    const packageSaveButton = document.getElementById('packageSaveButton');
-    const packageCancelButton = document.getElementById('packageCancelButton');
-    const packageIdentityGrid = document.getElementById('packageIdentityGrid');
-    const packageIdentityInputs = document.querySelectorAll('.package-field-input');
+const packageWrapperWindow = document.getElementById('packageWrapperWindow');
+const packageWrapperHeader = document.getElementById('packageWrapperHeader');
+const packageWrapperCloseButton = document.getElementById('packageWrapperCloseButton');
+const packageAppearanceSection = document.getElementById('packageAppearanceSection');
+const editBannerButton = document.getElementById('editBannerButton');
+const editIconButton = document.getElementById('editIconButton');
+const editLogoButton = document.getElementById('editLogoButton');
+const packageEditButton = document.getElementById('packageEditButton');
+const packageSaveButton = document.getElementById('packageSaveButton');
+const packageCancelButton = document.getElementById('packageCancelButton');
+const packageIdentityGrid = document.getElementById('packageIdentityGrid');
+const packageIdentityInputs = document.querySelectorAll('.package-field-input');
 
-    // Designer Elements
-    const designerTree = document.querySelector('.designer-tree');
-    const fileExplorerView = document.getElementById('fileExplorerView');
-    const codeEditorView = document.getElementById('codeEditorView');
-    const designerContentTitle = document.getElementById('designerContentTitle');
-    const codeEditorTitle = document.getElementById('codeEditorTitle');
-    const fileListBody = document.getElementById('fileListBody');
-    const addFileBtn = document.getElementById('addFileBtn');
-    const addFileOptionsBtn = document.getElementById('addFileOptionsBtn');
-    const deleteFileBtn = document.getElementById('deleteFileBtn');
-    const collapseAllBtn = document.getElementById('collapseAllBtn');
-    const importSection = document.getElementById('importSection');
-    
-    // Editor Footer Buttons
-    const addCodeBtn = document.getElementById('addCodeBtn');
-    const recentBtn = document.getElementById('recentBtn');
-    const helpBtn = document.getElementById('helpBtn');
+// Designer Elements
+const designerTree = document.querySelector('.designer-tree');
+const fileExplorerView = document.getElementById('fileExplorerView');
+const codeEditorView = document.getElementById('codeEditorView');
+const designerContentTitle = document.getElementById('designerContentTitle');
+const codeEditorTitle = document.getElementById('codeEditorTitle');
+const fileListBody = document.getElementById('fileListBody');
+const addFileBtn = document.getElementById('addFileBtn');
+const addFileOptionsBtn = document.getElementById('addFileOptionsBtn');
+const deleteFileBtn = document.getElementById('deleteFileBtn');
+const collapseAllBtn = document.getElementById('collapseAllBtn');
+const importSection = document.getElementById('importSection');
 
-    // --- CodeMirror Instance ---
-    let editor;
-    try {
-        editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
-            lineNumbers: true,
-            mode: 'powershell',
-            theme: 'dracula',
-            lineWrapping: true
+// Editor Footer Buttons
+const addCodeBtn = document.getElementById('addCodeBtn');
+const recentBtn = document.getElementById('recentBtn');
+const helpBtn = document.getElementById('helpBtn');
+
+// --- CodeMirror Instance ---
+let editor;
+
+// --- State ---
+const psadtState = {
+    isEditing: false,
+    originalValues: {},
+    currentImageType: null 
+};
+
+// Example appState object for modal state tracking
+const appState = {
+    modalOpen: false,
+    packageWrapperOpen: false
+};
+
+// Modal open logic (if needed)
+export function openPSADTModal() {
+    appState.modalOpen = true;
+    psadtModal.classList.remove('hidden');
+    const now = new Date();
+    const timestamp = now.getFullYear().toString() +
+        (now.getMonth() + 1).toString().padStart(2, '0') +
+        now.getDate().toString().padStart(2, '0') + '-' +
+        now.getHours().toString().padStart(2, '0') +
+        now.getMinutes().toString().padStart(2, '0') +
+        now.getSeconds().toString().padStart(2, '0');
+    packageLocationInput.value = `C:\\PKG\\PKG-${timestamp}`;
+    document.body.style.overflow = 'hidden';
+    console.log('PSAppDeployToolkit modal opened');
+}
+
+function closePSADTModal() {
+    appState.modalOpen = false;
+    psadtModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    console.log('PSAppDeployToolkit modal closed');
+}
+
+function handleCreatePackage() {
+    console.log('Creating PSAppDeployToolkit package:', {
+        template: document.getElementById('templateSelect').value,
+        location: packageLocationInput.value
+    });
+    closePSADTModal();
+    openPackageWrapperWindow();
+}
+
+// --- Package Wrapper Functions ---
+function openPackageWrapperWindow() {
+    appState.packageWrapperOpen = true;
+    packageWrapperWindow.classList.remove('hidden');
+    const packageName = packageLocationInput.value.split('\\').pop();
+    packageWrapperWindow.querySelector('.package-wrapper-title').textContent = `Package Wrapper - ${packageName}`;
+    document.body.style.overflow = 'hidden';
+    console.log('Package Wrapper window opened');
+    // Initialize CodeMirror here, after the modal is visible
+    if (!editor) {
+        try {
+            editor = CodeMirror.fromTextArea(document.getElementById('codeEditor'), {
+                lineNumbers: true,
+                mode: 'powershell',
+                theme: 'dracula',
+                lineWrapping: true,
+                value: fullScriptContent
+            });
+        } catch (e) {
+            console.error("CodeMirror failed to initialize.", e);
+        }
+    }
+}
+
+function closePackageWrapperWindow() {
+    if (psadtState.isEditing) {
+        if (confirm('You have unsaved changes. Are you sure you want to close?')) {
+            handlePackageCancel();
+        } else {
+            return;
+        }
+    }
+    appState.packageWrapperOpen = false;
+    packageWrapperWindow.classList.add('hidden');
+    document.body.style.overflow = '';
+    console.log('Package Wrapper window closed');
+}
+
+// --- Edit Mode Functions ---
+function handlePackageEdit() {
+    psadtState.isEditing = true;
+    packageIdentityInputs.forEach(input => {
+        psadtState.originalValues[input.id] = input.value;
+    });
+    packageAppearanceSection.classList.add('edit-mode');
+    packageCancelButton.classList.remove('hidden');
+    packageIdentityInputs.forEach(input => input.readOnly = false);
+    document.getElementById('pkg-name').focus();
+    console.log('Package edit mode enabled');
+}
+
+function handlePackageSave() {
+    console.log('Saving package identity...');
+    finishEditing();
+    console.log('Package edit mode disabled, changes saved.');
+}
+
+function handlePackageCancel() {
+    packageIdentityInputs.forEach(input => {
+        input.value = psadtState.originalValues[input.id];
+    });
+    finishEditing();
+    console.log('Package edit mode disabled, changes canceled.');
+}
+
+function finishEditing() {
+    psadtState.isEditing = false;
+    packageAppearanceSection.classList.remove('edit-mode');
+    packageIdentityGrid.classList.remove('edit-mode');
+    packageEditButton.classList.remove('hidden');
+    packageSaveButton.classList.add('hidden');
+    packageCancelButton.classList.add('hidden');
+    packageIdentityInputs.forEach(input => input.readOnly = true);
+}
+
+function handleImageEdit(type) {
+    if (!psadtState.isEditing) return;
+    psadtState.currentImageType = type;
+    imageUploadInput.click();
+}
+
+function onImageSelected(event) {
+    const file = event.target.files[0];
+    if (file && psadtState.currentImageType) {
+        console.log(`Selected ${psadtState.currentImageType}: ${file.name}`);
+        alert(`Selected file for ${psadtState.currentImageType}: ${file.name}\n(Preview not implemented)`);
+    }
+    event.target.value = '';
+    psadtState.currentImageType = null;
+}
+
+// --- Draggable Window ---
+function makeDraggable(element, handle) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    handle.onmousedown = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        element.style.top = (element.offsetTop - pos2) + "px";
+        element.style.left = (element.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
+    }
+}
+
+// --- Package Tab Functions ---
+function switchPackageTab(tabId) {
+    document.querySelectorAll('.package-tab').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.packageTab === tabId);
+    });
+    document.querySelectorAll('.package-tab-content').forEach(content => {
+        content.classList.toggle('hidden', content.id !== `${tabId}Tab`);
+    });
+}
+
+// --- Designer Functions ---
+function handleDesignerNavigation(element) {
+    document.querySelectorAll('.tree-item.active').forEach(item => item.classList.remove('active'));
+    element.classList.add('active');
+
+    const view = element.dataset.view;
+    const title = element.querySelector('span').textContent;
+
+    if (view === 'explorer') {
+        fileExplorerView.classList.remove('hidden');
+        codeEditorView.classList.add('hidden');
+        designerContentTitle.textContent = title;
+    } else if (view === 'editor') {
+        fileExplorerView.classList.add('hidden');
+        codeEditorView.classList.remove('hidden');
+        codeEditorTitle.textContent = title;
+        if (editor) {
+            editor.setValue(fullScriptContent);
+            editor.refresh();
+        }
+    }
+}
+
+// --- Event Listeners ---
+function initializePsadtEventListeners() {
+    if (modalCloseButton) modalCloseButton.addEventListener('click', closePSADTModal);
+    if (cancelButton) cancelButton.addEventListener('click', closePSADTModal);
+    if (createPackageButton) createPackageButton.addEventListener('click', handleCreatePackage);
+    if (packageWrapperCloseButton) packageWrapperCloseButton.addEventListener('click', closePackageWrapperWindow);
+    if (packageEditButton) packageEditButton.addEventListener('click', handlePackageEdit);
+    if (packageSaveButton) packageSaveButton.addEventListener('click', handlePackageSave);
+    if (packageCancelButton) packageCancelButton.addEventListener('click', handlePackageCancel);
+    if (editBannerButton) editBannerButton.addEventListener('click', () => handleImageEdit('banner'));
+    if (editIconButton) editIconButton.addEventListener('click', () => handleImageEdit('icon'));
+    if (editLogoButton) editLogoButton.addEventListener('click', () => handleImageEdit('logo'));
+    if (imageUploadInput) imageUploadInput.addEventListener('change', onImageSelected);
+
+    document.querySelectorAll('.package-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchPackageTab(tab.dataset.packageTab));
+    });
+
+    document.querySelectorAll('.designer-tree .tree-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Stop propagation to prevent parent handlers from firing
+            e.stopPropagation(); 
+            handleDesignerNavigation(item);
         });
-    } catch (e) {
-        console.error("CodeMirror failed to initialize.", e);
-    }
+    });
 
-    // --- State ---
-    const psadtState = {
-        isEditing: false,
-        originalValues: {},
-        currentImageType: null 
-    };
+    // Draggable functionality
+    if (packageWrapperWindow && packageWrapperHeader) {
+        makeDraggable(packageWrapperWindow, packageWrapperHeader);
+    }
+}
 
-    // --- Modal Functions ---
-    function openPSADTModal() {
-        appState.modalOpen = true;
-        psadtModal.classList.remove('hidden');
-        const now = new Date();
-        const timestamp = now.getFullYear().toString() +
-            (now.getMonth() + 1).toString().padStart(2, '0') +
-            now.getDate().toString().padStart(2, '0') + '-' +
-            now.getHours().toString().padStart(2, '0') +
-            now.getMinutes().toString().padStart(2, '0') +
-            now.getSeconds().toString().padStart(2, '0');
-        packageLocationInput.value = `C:\\PKG\\PKG-${timestamp}`;
-        document.body.style.overflow = 'hidden';
-        console.log('PSAppDeployToolkit modal opened');
-    }
+// --- Initialization ---
+initializePsadtEventListeners();
 
-    function closePSADTModal() {
-        appState.modalOpen = false;
-        psadtModal.classList.add('hidden');
-        document.body.style.overflow = '';
-        console.log('PSAppDeployToolkit modal closed');
-    }
-    
-    function handleCreatePackage() {
-        console.log('Creating PSAppDeployToolkit package:', {
-            template: document.getElementById('templateSelect').value,
-            location: packageLocationInput.value
-        });
-        closePSADTModal();
-        openPackageWrapperWindow();
-    }
 
-    // --- Package Wrapper Functions ---
-    function openPackageWrapperWindow() {
-        appState.packageWrapperOpen = true;
-        packageWrapperWindow.classList.remove('hidden');
-        const packageName = packageLocationInput.value.split('\\').pop();
-        packageWrapperWindow.querySelector('.package-wrapper-title').textContent = `Package Wrapper - ${packageName}`;
-        document.body.style.overflow = 'hidden';
-        console.log('Package Wrapper window opened');
-    }
-
-    function closePackageWrapperWindow() {
-        if (psadtState.isEditing) {
-            if (confirm('You have unsaved changes. Are you sure you want to close?')) {
-                handlePackageCancel();
-            } else {
-                return;
-            }
-        }
-        appState.packageWrapperOpen = false;
-        packageWrapperWindow.classList.add('hidden');
-        document.body.style.overflow = '';
-        console.log('Package Wrapper window closed');
-    }
-    
-    // --- Edit Mode Functions ---
-    function handlePackageEdit() {
-        psadtState.isEditing = true;
-        packageIdentityInputs.forEach(input => {
-            psadtState.originalValues[input.id] = input.value;
-        });
-        packageAppearanceSection.classList.add('edit-mode');
-        packageIdentityGrid.classList.add('edit-mode');
-        packageEditButton.classList.add('hidden');
-        packageSaveButton.classList.remove('hidden');
-        packageCancelButton.classList.remove('hidden');
-        packageIdentityInputs.forEach(input => input.readOnly = false);
-        document.getElementById('pkg-name').focus();
-        console.log('Package edit mode enabled');
-    }
-
-    function handlePackageSave() {
-        console.log('Saving package identity...');
-        finishEditing();
-        console.log('Package edit mode disabled, changes saved.');
-    }
-
-    function handlePackageCancel() {
-        packageIdentityInputs.forEach(input => {
-            input.value = psadtState.originalValues[input.id];
-        });
-        finishEditing();
-        console.log('Package edit mode disabled, changes canceled.');
-    }
-    
-    function finishEditing() {
-        psadtState.isEditing = false;
-        packageAppearanceSection.classList.remove('edit-mode');
-        packageIdentityGrid.classList.remove('edit-mode');
-        packageEditButton.classList.remove('hidden');
-        packageSaveButton.classList.add('hidden');
-        packageCancelButton.classList.add('hidden');
-        packageIdentityInputs.forEach(input => input.readOnly = true);
-    }
-
-    function handleImageEdit(type) {
-        if (!psadtState.isEditing) return;
-        psadtState.currentImageType = type;
-        imageUploadInput.click();
-    }
-    
-    function onImageSelected(event) {
-        const file = event.target.files[0];
-        if (file && psadtState.currentImageType) {
-            console.log(`Selected ${psadtState.currentImageType}: ${file.name}`);
-            alert(`Selected file for ${psadtState.currentImageType}: ${file.name}\n(Preview not implemented)`);
-        }
-        event.target.value = '';
-        psadtState.currentImageType = null;
-    }
-    
-    // --- Draggable Window ---
-    function makeDraggable(element, handle) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        handle.onmousedown = dragMouseDown;
-
-        function dragMouseDown(e) {
-            e.preventDefault();
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-        }
-
-        function elementDrag(e) {
-            e.preventDefault();
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
-        }
-
-        function closeDragElement() {
-            document.onmouseup = null;
-            document.onmousemove = null;
-        }
-    }
-    
-    // --- Designer Functions ---
-    const fullScriptContent = `<#
+// Store the PowerShell script for use in the editor or elsewhere
+const fullScriptContent = `
+<#
 .SYNOPSIS
 
 PSApppDeployToolkit - This script performs the installation or uninstallation of an application(s).
@@ -281,7 +356,6 @@ Toolkit Exit Code Ranges:
 https://psappdeploytoolkit.com
 #>
 
-
 [CmdletBinding()]
 Param (
     [Parameter(Mandatory = $false)]
@@ -339,9 +413,6 @@ Try {
     If (Test-Path -LiteralPath 'variable:HostInvocation') {
         $InvocationInfo = $HostInvocation
     }
-    Else {
-        $InvocationInfo = $MyInvocation
-    }
     [String]$scriptDirectory = Split-Path -Path $InvocationInfo.MyCommand.Definition -Parent
 
     ## Dot source the required App Deploy Toolkit Functions
@@ -361,7 +432,9 @@ Try {
         If ($mainExitCode -eq 0) {
             [Int32]$mainExitCode = 60008
         }
-        Write-Error -Message "Module [$moduleAppDeployToolkitMain] failed to load: `n$($_.Exception.Message)`n `n$($_.InvocationInfo.PositionMessage)" -ErrorAction 'Continue'
+         Write-Error -Message "Module [$moduleAppDeployToolkitMain] failed to load:       │
+ │        \`n\$($_.Exception.Message)\`n \`n\$($_.InvocationInfo.PositionMessage)" -ErrorAction      │
+ │        'Continue'
         ## Exit the script, returning the exit code to SCCM
         If (Test-Path -LiteralPath 'variable:HostInvocation') {
             $script:ExitCode = $mainExitCode; Exit
@@ -403,9 +476,6 @@ Try {
         ##*===============================================
         ##* MARK: POST-INSTALLATION
         ##*===============================================
-        [String]$installPhase = 'Post-Installation'
-
-        ## <Perform Post-Installation tasks here>
 
         
     }
@@ -477,8 +547,9 @@ Try {
 }
 Catch {
     [Int32]$mainExitCode = 60001
-    [String]$mainErrorMessage = "$(Resolve-Error)"
+    [String]$mainErrorMessage = "\$(Resolve-Error)"
     Write-Log -Message $mainErrorMessage -Severity 3 -Source $deployAppScriptFriendlyName
     Show-DialogBox -Text $mainErrorMessage -Icon 'Stop'
     Exit-Script -ExitCode $mainExitCode
 }
+`;

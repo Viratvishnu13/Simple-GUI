@@ -4,8 +4,7 @@
   "version": "0.1.0",
   "identifier": "com.simpleguitauri.app",
   "build": {
-    "frontendDist": "../web",
-    "beforeDevCommand": "npm run dev"
+    "frontendDist": "../web"
   },
   "app": {
     "windows": [
@@ -13,9 +12,9 @@
         "title": "simple-gui-tauri",
         "width": 800,
         "height": 600,
-        "resizable": true,
+        "resizable": false,
         "fullscreen": false,
-        "decorations": true
+        "decorations": false
       }
     ],
     "security": {

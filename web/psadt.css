@@ -91,11 +91,10 @@
 
 /* Main Content Area */
 .package-wrapper-content {
-  padding: 0; 
-  overflow-y: hidden;
   display: flex;
   flex: 1;
-  min-height: 0; /* Important for flexbox scrolling children */
+  overflow: hidden; /* Changed from overflow-y */
+  min-height: 0;
 }
 
 /* General Tab */
@@ -264,11 +263,22 @@
     background-color: var(--accent);
 }
 
-/* Package Designer Tab */
+/* This ensures the tab content fills the space */
+.package-tab-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+}
+
+#designerTab {
+    padding: 0; /* Remove padding from the tab itself */
+}
+
 .package-designer-layout {
     display: flex;
-    height: 100%;
-    width: 100%;
+    flex: 1;
+    min-height: 0;
 }
 
 .designer-sidebar {
@@ -315,6 +325,7 @@
     flex-direction: column;
     padding: 1rem;
     overflow: hidden;
+    min-height: 0;
 }
 
 .designer-content-header {
@@ -455,15 +466,17 @@
 #codeEditorView {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow: hidden; /* Prevent this container from scrolling */
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
 }
+
 .CodeMirror {
-    flex-grow: 1; /* Allow editor to grow */
-    height: 100%; /* Take up remaining space */
-    margin-top: 1rem;
+    flex-grow: 1;
     border: 1px solid var(--border);
     border-radius: 0.375rem;
+    margin-top: 1rem;
+    /* The overflow: auto is implicitly handled by CodeMirror's own JS */
 }
 
 /* CodeMirror Theme Overrides for Light/Dark mode */

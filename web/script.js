@@ -1,3 +1,7 @@
+import { Window } from './tauri-api/window.js';
+import { openPSADTModal } from './psadt.js';
+const appWindow = Window.getCurrent();
+
 // Application State
 const appState = {
   sidebarOpen: true,
@@ -65,37 +69,15 @@ function getOptionDisplayName(option) {
 
 // Window Controls Functions
 function minimizeWindow() {
-  console.log('Minimize window requested');
+  appWindow.minimize();
 }
 
 function toggleMaximizeWindow() {
-  appState.isMaximized = !appState.isMaximized;
-  
-  if (appState.isMaximized) {
-    maximizeButton.innerHTML = `
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <rect x="1" y="1" width="5" height="5" stroke="currentColor" stroke-width="1" fill="none"/>
-        <rect x="3" y="3" width="5" height="5" stroke="currentColor" stroke-width="1" fill="none"/>
-      </svg>
-    `;
-    maximizeButton.title = 'Restore Down';
-    console.log('Window maximized');
-  } else {
-    maximizeButton.innerHTML = `
-      <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-        <rect x="2" y="2" width="6" height="6" stroke="currentColor" stroke-width="1" fill="none"/>
-      </svg>
-    `;
-    maximizeButton.title = 'Maximize';
-    console.log('Window restored');
-  }
+  appWindow.toggleMaximize();
 }
 
 function closeWindow() {
-  console.log('Close window requested');
-  if (confirm('Are you sure you want to close the application?')) {
-    console.log('Application would close now');
-  }
+  appWindow.close();
 }
 
 // Theme Management
@@ -168,12 +150,15 @@ function setSelectedTask(taskId) {
 }
 
 function setSelectedOption(optionId) {
-  // This function is now simplified, as PSADT options are handled in psadt.js
   appState.selectedOption = optionId;
   
   document.querySelectorAll('.option-item').forEach(item => {
     item.classList.toggle('selected', item.getAttribute('data-option') === optionId);
   });
+  
+  if (optionId && optionId.includes('psadt')) {
+      openPSADTModal();
+  }
   
   updateBreadcrumb();
 }
@@ -227,8 +212,7 @@ function initializeEventListeners() {
     item.addEventListener('click', () => setSelectedTask(item.dataset.task));
   });
   
-  // Event listener for non-PSADT options
-  document.querySelectorAll('.option-item:not(.psadt-option)').forEach(item => {
+  document.querySelectorAll('.option-item').forEach(item => {
       item.addEventListener('click', () => setSelectedOption(item.dataset.option));
   });
   

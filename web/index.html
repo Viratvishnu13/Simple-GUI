@@ -15,7 +15,7 @@
 <body>
     <input type="file" id="imageUploadInput" class="hidden" accept="image/*">
     <div class="app-container">
-        <header class="header">
+        <header class="header" data-tauri-drag-region>
             <div class="title-bar">
                 <div class="title-bar-left">
                     <button class="menu-button" id="menuButton">
@@ -782,7 +782,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
-    <script src="psadt.js"></script> 
+    <script type="module" src="psadt.js"></script>
+    <script type="module" src="script.js"></script> 
 </body>
 </html>
